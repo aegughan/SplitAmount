@@ -97,6 +97,38 @@ async function deleteDish(dishData) {
     return result
 }
 
+// Company Data Call
+async function createCompany(companyData) {
+    console.log('Create Company Called', companyData)
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("Company")
+    const result = await collection.insertOne(companyData)
+    console.log('Company Created Successfully', JSON.stringify(result))
+    return result
+}
+
+async function getAllCompany() {
+    console.log('Get All Company Called')
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("Company")
+    const allCompanys = await collection.find({}).toArray();
+    console.log('Company Fecthed Successfully', allCompanys)
+    client.close();
+    return allCompanys
+}
+
+async function deleteCompany(companyData) {
+    console.log('Delete Company Called', companyData)
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("Company")
+    const result = await collection.deleteOne(companyData)
+    console.log('Company Deleted Successfully', JSON.stringify(result))
+    return result
+}
+
 var express = require('express');
 var app = express();
 app.use(express.json());
@@ -152,6 +184,24 @@ app.post('/Dish', async function (req, res) {
 app.delete('/Dish', async function (req, res) {
     console.log(req.body)
     const result = await deleteDish(req.body)
+    res.json(result)
+})
+
+// Dish CRUD
+app.get('/Company', async function (req, res) {
+    const result = await getAllCompany()
+    res.json(result); 
+})
+
+app.post('/Company', async function (req, res) {
+    console.log(req.body)
+    const result = await createCompany(req.body)
+    res.json(result)
+})
+
+app.delete('/Company', async function (req, res) {
+    console.log(req.body)
+    const result = await deleteCompany(req.body)
     res.json(result)
 })
 
