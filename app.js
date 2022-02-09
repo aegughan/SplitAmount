@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId; 
 const uri = "mongodb+srv://aegughan:GUGhan%21%4012@cluster-splitamount.wzoqw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 // User data call
@@ -21,6 +22,16 @@ async function getAllUser() {
     console.log('User Fecthed Successfully', allUsers)
     client.close();
     return allUsers
+}
+
+async function getUser(userId) {
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("User")
+    const result = await collection.find({_id: new ObjectId(userId)}).toArray();
+    console.log('User Fecthed Successfully', user)
+    client.close();
+    return result
 }
 
 async function deleteUser(userData) {
@@ -55,6 +66,16 @@ async function getAllStore() {
     return allStores
 }
 
+async function getStore(storeId) {
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("Store")
+    const result = await collection.find({_id: new ObjectId(storeId)}).toArray();
+    console.log('Store Fecthed Successfully', store)
+    client.close();
+    return result
+}
+
 async function deleteStore(storeData) {
     console.log('Delete Store Called', storeData)
     const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
@@ -85,6 +106,16 @@ async function getAllDish() {
     console.log('Dish Fecthed Successfully', allDishs)
     client.close();
     return allDishs
+}
+
+async function getDish(dishId) {
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("Dish")
+    const result = await collection.find({_id: new ObjectId(dishId)}).toArray();
+    console.log('Dish Fecthed Successfully', dish)
+    client.close();
+    return result
 }
 
 async function deleteDish(dishData) {
@@ -119,6 +150,16 @@ async function getAllCompany() {
     return allCompanys
 }
 
+async function getCompany(companyId) {
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
+    const database = client.db("SplitAmount");
+    const collection = database.collection("Company")
+    const result = await collection.find({_id: new ObjectId(companyId)}).toArray();
+    console.log('Company Fecthed Successfully', company)
+    client.close();
+    return result
+}
+
 async function deleteCompany(companyData) {
     console.log('Delete Company Called', companyData)
     const client = await MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, }).catch(err => { console.log(err); });
@@ -139,13 +180,19 @@ app.get('/User', async function (req, res) {
     res.json(result); 
 })
 
+app.get('/User/:id', async function (req, res) {
+    console.log('req', req.params.id)
+    const result = await getUser(req.params.id)    
+    res.json(result); 
+})
+
 app.post('/User', async function (req, res) {
     console.log(req.body)
     const result = await createUser(req.body)
     res.json(result)
 })
 
-app.delete('/User', async function (req, res) {
+app.delete('/User/:id', async function (req, res) {
     console.log(req.body)
     const result = await deleteUser(req.body)
     res.json(result)
@@ -157,13 +204,19 @@ app.get('/Store', async function (req, res) {
     res.json(result); 
 })
 
+app.get('/Store/:id', async function (req, res) {
+    console.log('req', req.params.id)
+    const result = await getStore(req.params.id)    
+    res.json(result); 
+})
+
 app.post('/Store', async function (req, res) {
     console.log(req.body)
     const result = await createStore(req.body)
     res.json(result)
 })
 
-app.delete('/Store', async function (req, res) {
+app.delete('/Store/:id', async function (req, res) {
     console.log(req.body)
     const result = await deleteStore(req.body)
     res.json(result)
@@ -175,21 +228,33 @@ app.get('/Dish', async function (req, res) {
     res.json(result); 
 })
 
+app.get('/Dish/:id', async function (req, res) {
+    console.log('req', req.params.id)
+    const result = await getDish(req.params.id)    
+    res.json(result); 
+})
+
 app.post('/Dish', async function (req, res) {
     console.log(req.body)
     const result = await createDish(req.body)
     res.json(result)
 })
 
-app.delete('/Dish', async function (req, res) {
+app.delete('/Dish/:id', async function (req, res) {
     console.log(req.body)
     const result = await deleteDish(req.body)
     res.json(result)
 })
 
-// Dish CRUD
+// Company CRUD
 app.get('/Company', async function (req, res) {
     const result = await getAllCompany()
+    res.json(result); 
+})
+
+app.get('/Company/:id', async function (req, res) {
+    console.log('req', req.params.id)
+    const result = await getCompany(req.params.id)    
     res.json(result); 
 })
 
@@ -199,7 +264,7 @@ app.post('/Company', async function (req, res) {
     res.json(result)
 })
 
-app.delete('/Company', async function (req, res) {
+app.delete('/Company/:id', async function (req, res) {
     console.log(req.body)
     const result = await deleteCompany(req.body)
     res.json(result)
